@@ -1,5 +1,11 @@
-import React from 'react';
+import Header from 'components/Header';
+import SignupForm from 'components/SignupForm';
 
 export default function Signup() {
-  return <h1>Signup page</h1>;
+  return (
+    <>
+      <Header hasNavigation={false} />
+      <SignupForm />
+    </>
+  );
 }
