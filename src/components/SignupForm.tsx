@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
+import { app } from 'firebaseApp';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { toast } from 'react-toastify';
 
 const emailValidRegex =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -11,15 +14,27 @@ export default function SignupForm() {
   const [password, setPassword] = useState<string>('');
   const [passwordConfirm, setPasswordConfirm] = useState<string>('');
 
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth(app);
+
+      await createUserWithEmailAndPassword(auth, email, password);
+      toast.success('회원가입에 성공했습니다.');
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error?.code);
+    }
+  };
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { name, value },
     } = e;
 
     switch (name) {
-      case 'eamil':
+      case 'email':
         setEmail(value);
-
         if (!value?.match(emailValidRegex)) {
           setError('이메일 형식이 올바르지 않습니다.');
         } else {
@@ -55,10 +70,8 @@ export default function SignupForm() {
     }
   };
 
-  const onFinish = () => {};
-
   return (
-    <form action='post' method='POST' className='form form--lg'>
+    <form onSubmit={onSubmit} className='form form--lg'>
       <h1 className='form__title'>회원가입</h1>
       <div className='form__block'>
         <label htmlFor='email'>이메일</label>
@@ -72,7 +85,13 @@ export default function SignupForm() {
       </div>
       <div className='form__block'>
         <label htmlFor='password'>비밀번호</label>
-        <input type='password' name='password' id='password' required />
+        <input
+          type='password'
+          name='password'
+          id='password'
+          required
+          onChange={onChange}
+        />
       </div>
       <div className='form__block'>
         <label htmlFor='password_confirm'>비밀번호 확인</label>
@@ -81,8 +100,14 @@ export default function SignupForm() {
           name='password_confirm'
           id='password_confirm'
           required
+          onChange={onChange}
         />
       </div>
+      {error && error?.length > 0 && (
+        <div className='form__block'>
+          <div className='form__error'>{error}</div>
+        </div>
+      )}
       <div className='form__block'>
         계정이 이미 있으신가요?
         <Link to={'/login'} className='form__link'>
@@ -90,7 +115,12 @@ export default function SignupForm() {
         </Link>
       </div>
       <div className='form__block'>
-        <input type='button' value={'회원가입'} className='form__btn--submit' />
+        <input
+          type='submit'
+          value={'회원가입'}
+          className='form__btn--submit'
+          disabled={error?.length > 0}
+        />
       </div>
     </form>
   );
