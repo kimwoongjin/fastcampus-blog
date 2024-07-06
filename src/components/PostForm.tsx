@@ -55,7 +55,7 @@ export default function PostForm() {
           updatedAt: new Date()?.toLocaleDateString(),
         });
 
-        toast.success('게시글을 수정했습니다.', { delay: 1 });
+        toast.success('게시글을 수정했습니다.');
         navigate(`/posts/detail/${post.id}`);
       } else {
         // firestore로 데이터 생성
@@ -68,7 +68,7 @@ export default function PostForm() {
           uid: user?.uid,
         });
 
-        toast.success('게시글을 생성했습니다.', { delay: 1 });
+        toast.success('게시글을 생성했습니다.');
         navigate('/');
       }
     } catch (error: any) {
